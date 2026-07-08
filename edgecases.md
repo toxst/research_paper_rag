@@ -1,0 +1,5 @@
+- **Paper versioning** — arXiv papers get revised. 2304.01234v2 may differ significantly from v1. Decide upfront: do you re-ingest updated versions and replace old chunks, or keep both? - ***Replace old chunks***
+- **PDF parsing failures** — Some PDFs are scanned images, malformed, or have multi-column layouts that confuse parsers. Your pipeline needs a failure queue and logging so bad papers don't silently drop.
+- **Duplicate content** — The same paper sometimes appears on arXiv and in a conference proceedings. Use DOI or arXiv ID as your canonical deduplication key.
+- **Embedding model changes** — If you ever swap your embedding model, all existing vectors are incompatible. Design your document store so you can re-embed from stored extracted text without re-downloading all PDFs.
+- **Rate limits** — arXiv and Semantic Scholar both have rate limits. Your daily job should respect these with polite delays between requests.
