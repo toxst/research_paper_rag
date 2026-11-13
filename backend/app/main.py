@@ -1,6 +1,10 @@
-def main():
-    print("Hello from research-paper-rag!")
+from fastapi import FastAPI
 
+app = FastAPI(
+    title="Personal Research RAG API",
+    version="0.1.0"
+)
 
-if __name__ == "__main__":
-    main()
+@app.get("/api/health")
+async def health_check():
+    return {"status": "healthy"}
