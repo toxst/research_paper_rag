@@ -1,1 +1,14 @@
 papers/
+.venv/
+
+.env
+.env.*
+
+!.env.example
+
+__pycache__/
+*.py[cod]
+
+.streamlit/secrets.toml
+
+*.tmp
