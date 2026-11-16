@@ -1,0 +1,10 @@
+MB = 1024 * 1024
+
+MAX_ZIP_SIZE = 100 * MB
+MAX_TOTAL_PDF_BYTES = 250 * MB
+MAX_PDF_SIZE = 25 * MB
+MAX_PDF_COUNT = 50
+MAX_COMPRESSION_RATIO = 20
+
+# Limit the number of entries inspected in a ZIP archive.
+MAX_ZIP_ENTRIES = 1000
