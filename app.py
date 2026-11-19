@@ -125,11 +125,6 @@ def display_upload_results(result):
             format_size(total_size),
         )
 
-    st.info(
-        "PDFs have passed basic upload checks. "
-        "Full PDF parsing and Cloudflare R2 storage "
-        "will be added in the next development stages."
-    )
 
 
 def main():
