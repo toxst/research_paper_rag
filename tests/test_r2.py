@@ -2,7 +2,7 @@
 #             CODE TO TEST R2 CONNECTION               #
 ########################################################
 
-# Run this file with the command: uv run python tests/test_r2.py
+# Run this file with the command: uv run python -m tests.test_r2
 
 import os
 import boto3
