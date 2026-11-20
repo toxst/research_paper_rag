@@ -6,7 +6,12 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "boto3>=1.44.2",
+    "docling>=2.150.1",
+    "marker-pdf>=2.2.0",
+    "pillow>=10.4.0",
+    "pix2tex>=0.1.4",
     "pymupdf>=2.1",
+    "pymupdf4llm>=2.1",
     "python-dotenv>=1.2.4",
     "streamlit>=1.67.0",
 ]
