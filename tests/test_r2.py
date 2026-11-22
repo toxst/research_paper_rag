@@ -4,44 +4,67 @@
 
 # Run this file with the command: uv run python -m tests.test_r2
 
-import os
-import boto3
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
 
-load_dotenv()
+# Add project root to path for config import
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-s3 = boto3.client(
-    "s3",
-    endpoint_url=os.environ["R2_ENDPOINT_URL"],
-    aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
-    aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
-    region_name="auto",
-)
+import config
+from ingestion.r2_storage import R2Storage, R2StorageError
 
-bucket = os.environ["R2_BUCKET_NAME"]
-key = "test/hello.txt"
 
-try:
-    # Upload a small test object
-    s3.put_object(
-        Bucket=bucket,
-        Key=key,
-        Body=b"Hello from Research Paper Assistant!",
-    )
-    print("Upload successful!")
+def test_r2_connection() -> None:
+    """Test R2 connection using config.py settings."""
+    # Get R2 config from config module (supports st.secrets or env vars)
+    r2_config = config.R2_CONFIG
 
-    # Read it back
-    response = s3.get_object(Bucket=bucket, Key=key)
-    content = response["Body"].read().decode("utf-8")
-    print("Retrieved content:", content)
+    # Validate required settings are present
+    missing = [k for k, v in r2_config.items() if not v]
+    if missing:
+        print(f"Missing R2 configuration: {missing}")
+        print("Set via Streamlit secrets (.streamlit/secrets.toml) or environment variables")
+        sys.exit(1)
 
-    # Verify returned content
-    assert content == "Hello from Research Paper Assistant!"
+    print(f"Testing R2 connection to bucket: {r2_config['R2_BUCKET_NAME']}")
+    print(f"Endpoint: {r2_config['R2_ENDPOINT_URL']}")
 
-    # Remove the test object
-    s3.delete_object(Bucket=bucket, Key=key)
-    print("Test object cleaned up!")
+    try:
+        # Create R2Storage client using the shared from_settings method
+        storage = R2Storage.from_settings(r2_config)
+        print("R2Storage client created successfully!")
 
-except Exception as e:
-    print(f"R2 test failed: {e}")
-    raise
+        # Test with a small object
+        test_key = "test/connection_check.txt"
+        test_content = b"R2 connection test from Research Paper Assistant!"
+
+        # Upload
+        storage._client.put_object(
+            Bucket=storage.bucket,
+            Key=test_key,
+            Body=test_content,
+        )
+        print("Upload successful!")
+
+        # Read back and verify
+        response = storage._client.get_object(Bucket=storage.bucket, Key=test_key)
+        retrieved = response["Body"].read()
+        assert retrieved == test_content, "Content mismatch!"
+        print("Retrieved content verified!")
+
+        # Clean up
+        storage._client.delete_object(Bucket=storage.bucket, Key=test_key)
+        print("Test object cleaned up!")
+
+        print("\n[OK] R2 connection test PASSED")
+
+    except R2StorageError as e:
+        print(f"\n[ERROR] R2 configuration error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n[ERROR] R2 connection test FAILED: {e}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    test_r2_connection()
